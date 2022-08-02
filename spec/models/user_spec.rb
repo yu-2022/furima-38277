@@ -40,16 +40,28 @@ RSpec.describe User, type: :model do
         expect(@user.errors.full_messages).to include("Password can't be blank")
       end
       it 'passwordが5文字以下では登録できない' do
-        @user.password = '12345'
-        @user.password_confirmation = '12345'
+        @user.password = '1234a'
+        @user.password_confirmation = '1234a'
         @user.valid?
         expect(@user.errors.full_messages).to include('Password is too short (minimum is 6 characters)')
       end
-      it "passwordは半角英数字混合でないと登録できない" do
+      it "英字のみのpasswordでは登録できない" do
         @user.password = 'abcdef'
         @user.password_confirmation = 'abcdef'
         @user.valid?
-        expect(@user.errors.full_messages).to include("Password には英字と数字の両方を含めて設定してください")
+        expect(@user.errors.full_messages).to include("Password には英字と数字の両方を含めて設定してください(半角)")
+      end
+      it "数字のみのpasswordでは登録できない" do
+        @user.password = '123456'
+        @user.password_confirmation = '123456'
+        @user.valid?
+        expect(@user.errors.full_messages).to include("Password には英字と数字の両方を含めて設定してください(半角)")
+      end
+      it "全角文字を含むpasswordでは登録できない" do
+        @user.password = 'Ａbcdef'
+        @user.password_confirmation = 'Ａbcdef'
+        @user.valid?
+        expect(@user.errors.full_messages).to include("Password には英字と数字の両方を含めて設定してください(半角)")
       end
       it 'passwordとpassword_confirmationが不一致では登録できない' do
         @user.password = '123456'
@@ -90,12 +102,12 @@ RSpec.describe User, type: :model do
       it "お名前(カナ)の名字が半角では登録できない" do
         @user.last_name_kana = 'ｽｽﾞｷ'
         @user.valid?
-        expect(@user.errors.full_messages).to include("Last name kana 全角文字を使用してください")
+        expect(@user.errors.full_messages).to include("Last name kana 全角カタカナを使用してください")
       end
-      it "お名前(全角)の名前が半角では登録できない" do
+      it "お名前(カナ)の名前が半角では登録できない" do
         @user.first_name_kana = 'ﾀﾛｳ'
         @user.valid?
-        expect(@user.errors.full_messages).to include("First name kana 全角文字を使用してください")
+        expect(@user.errors.full_messages).to include("First name kana 全角カタカナを使用してください")
       end
       it "生年月日が空では登録できない" do
         @user.birthday = ''
