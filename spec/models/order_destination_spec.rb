@@ -77,7 +77,6 @@ RSpec.describe OrderDestination, type: :model do
       end
       it 'tokenが空では保存されない' do
         @order_destination.token = nil
-        binding.pry
         @order_destination.valid?
         expect(@order_destination.errors.full_messages).to include("Token can't be blank")
       end
